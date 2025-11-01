@@ -1,28 +1,56 @@
--- Create table for storing sensor data (temperature and pH)
+-- =====================================================
+--  CREATE TABLE SENSOR DATA (untuk monitoring kualitas air)
+-- =====================================================
+
 CREATE TABLE public.sensor_data (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  temperature DECIMAL(5,2) NOT NULL,
-  ph DECIMAL(4,2) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  temperature DECIMAL(5,2) NOT NULL,          -- Suhu air (°C)
+  ph DECIMAL(4,2) NOT NULL,                   -- Derajat keasaman
+  dissolved_oxygen DECIMAL(5,2),              -- Oksigen terlarut (mg/L)
+  salinity DECIMAL(5,2),                      -- Salinitas (ppt)
+  turbidity DECIMAL(5,2),                     -- Kekeruhan (NTU)
+  ammonia DECIMAL(5,3),                       -- Kadar amonia (mg/L)
+  water_level DECIMAL(6,2),                   -- Ketinggian air (cm)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Enable Row Level Security
+-- =====================================================
+--  ROW LEVEL SECURITY (RLS) & POLICIES
+-- =====================================================
+
+-- Aktifkan keamanan baris
 ALTER TABLE public.sensor_data ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow anyone to read sensor data (public monitoring)
+-- Izinkan semua orang melihat data (untuk web monitoring publik)
 CREATE POLICY "Anyone can view sensor data" 
 ON public.sensor_data 
 FOR SELECT 
 USING (true);
 
--- Create policy to allow anyone to insert sensor data (from IoT devices)
+-- Izinkan perangkat IoT menambahkan data baru
 CREATE POLICY "Anyone can insert sensor data" 
 ON public.sensor_data 
 FOR INSERT 
 WITH CHECK (true);
 
--- Create index for faster queries on created_at
-CREATE INDEX idx_sensor_data_created_at ON public.sensor_data(created_at DESC);
+-- =====================================================
+--  INDEX & REALTIME SETUP
+-- =====================================================
 
--- Enable realtime for live updates
+-- Buat index agar query berdasarkan waktu lebih cepat
+CREATE INDEX idx_sensor_data_created_at 
+ON public.sensor_data(created_at DESC);
+
+-- Aktifkan fitur realtime Supabase (agar web dapat update otomatis)
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sensor_data;
+
+-- =====================================================
+--  SAMPLE DATA (contoh data awal)
+-- =====================================================
+
+INSERT INTO public.sensor_data 
+(temperature, ph, dissolved_oxygen, salinity, turbidity, ammonia, water_level)
+VALUES 
+  (28.5, 7.8, 6.5, 15.2, 12.3, 0.15, 125.5),
+  (29.2, 7.6, 6.8, 15.8, 10.5, 0.12, 128.2),
+  (27.8, 8.0, 7.2, 14.9, 11.8, 0.18, 123.7);
