@@ -16,22 +16,37 @@ export type Database = {
     Tables: {
       sensor_data: {
         Row: {
+          ammonia: number | null
           created_at: string
+          dissolved_oxygen: number | null
           id: string
           ph: number
+          salinity: number | null
           temperature: number
+          turbidity: number | null
+          water_level: number | null
         }
         Insert: {
+          ammonia?: number | null
           created_at?: string
+          dissolved_oxygen?: number | null
           id?: string
           ph: number
+          salinity?: number | null
           temperature: number
+          turbidity?: number | null
+          water_level?: number | null
         }
         Update: {
+          ammonia?: number | null
           created_at?: string
+          dissolved_oxygen?: number | null
           id?: string
           ph?: number
+          salinity?: number | null
           temperature?: number
+          turbidity?: number | null
+          water_level?: number | null
         }
         Relationships: []
       }

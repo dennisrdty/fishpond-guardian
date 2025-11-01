@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Thermometer, Droplet, RefreshCw, Database } from "lucide-react";
+import { Thermometer, Droplet, RefreshCw, Database, Wind, Waves, Eye, FlaskConical, Ruler } from "lucide-react";
 import { MetricCard } from "@/components/MetricCard";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,11 @@ interface SensorData {
   id: string;
   temperature: number;
   ph: number;
+  dissolved_oxygen?: number;
+  salinity?: number;
+  turbidity?: number;
+  ammonia?: number;
+  water_level?: number;
   created_at: string;
 }
 
@@ -73,6 +78,30 @@ const Index = () => {
     return "danger";
   };
 
+  const getDoStatus = (dissolvedOxygen: number): "normal" | "warning" | "danger" => {
+    if (dissolvedOxygen >= 5 && dissolvedOxygen <= 8) return "normal";
+    if (dissolvedOxygen >= 4 && dissolvedOxygen <= 9) return "warning";
+    return "danger";
+  };
+
+  const getSalinityStatus = (salinity: number): "normal" | "warning" | "danger" => {
+    if (salinity >= 15 && salinity <= 25) return "normal";
+    if (salinity >= 10 && salinity <= 30) return "warning";
+    return "danger";
+  };
+
+  const getTurbidityStatus = (turbidity: number): "normal" | "warning" | "danger" => {
+    if (turbidity <= 50) return "normal";
+    if (turbidity <= 100) return "warning";
+    return "danger";
+  };
+
+  const getAmmoniaStatus = (ammonia: number): "normal" | "warning" | "danger" => {
+    if (ammonia <= 0.02) return "normal";
+    if (ammonia <= 0.05) return "warning";
+    return "danger";
+  };
+
   const temperature = latestData?.temperature || 0;
   const ph = latestData?.ph || 0;
   const lastUpdate = latestData?.created_at 
@@ -127,13 +156,13 @@ const Index = () => {
 
         {/* Metrics Grid */}
         {loading ? (
-          <div className="grid gap-6 md:grid-cols-2 animate-pulse">
-            {[1, 2].map((i) => (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div key={i} className="h-48 bg-muted rounded-xl" />
             ))}
           </div>
         ) : latestData ? (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <MetricCard
               title="Suhu Air"
               value={temperature.toFixed(1)}
@@ -150,6 +179,56 @@ const Index = () => {
               status={getPhStatus(ph)}
               range="7.0-8.5"
             />
+            {latestData.dissolved_oxygen !== null && latestData.dissolved_oxygen !== undefined && (
+              <MetricCard
+                title="Oksigen Terlarut"
+                value={latestData.dissolved_oxygen.toFixed(1)}
+                unit="mg/L"
+                icon={Wind}
+                status={getDoStatus(latestData.dissolved_oxygen)}
+                range="5-8 mg/L"
+              />
+            )}
+            {latestData.salinity !== null && latestData.salinity !== undefined && (
+              <MetricCard
+                title="Salinitas"
+                value={latestData.salinity.toFixed(1)}
+                unit="ppt"
+                icon={Waves}
+                status={getSalinityStatus(latestData.salinity)}
+                range="15-25 ppt"
+              />
+            )}
+            {latestData.turbidity !== null && latestData.turbidity !== undefined && (
+              <MetricCard
+                title="Kekeruhan"
+                value={latestData.turbidity.toFixed(1)}
+                unit="NTU"
+                icon={Eye}
+                status={getTurbidityStatus(latestData.turbidity)}
+                range="< 50 NTU"
+              />
+            )}
+            {latestData.ammonia !== null && latestData.ammonia !== undefined && (
+              <MetricCard
+                title="Amonia"
+                value={latestData.ammonia.toFixed(3)}
+                unit="mg/L"
+                icon={FlaskConical}
+                status={getAmmoniaStatus(latestData.ammonia)}
+                range="< 0.02 mg/L"
+              />
+            )}
+            {latestData.water_level !== null && latestData.water_level !== undefined && (
+              <MetricCard
+                title="Level Air"
+                value={latestData.water_level.toFixed(1)}
+                unit="cm"
+                icon={Ruler}
+                status="normal"
+                range="-"
+              />
+            )}
           </div>
         ) : (
           <div className="text-center py-12">
@@ -164,7 +243,7 @@ const Index = () => {
         {/* Info Section */}
         <div className="mt-8 p-6 bg-card rounded-xl border border-border">
           <h3 className="text-lg font-semibold text-foreground mb-3">Informasi Parameter</h3>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
               <h4 className="font-medium text-foreground flex items-center gap-2">
                 <Thermometer className="h-4 w-4 text-primary" />
@@ -173,7 +252,6 @@ const Index = () => {
               <ul className="text-sm text-muted-foreground space-y-1 ml-6">
                 <li>• Ideal: 26-30°C</li>
                 <li>• Toleransi: 24-32°C</li>
-                <li>• Di luar rentang ini dapat menyebabkan stres pada ikan</li>
               </ul>
             </div>
             <div className="space-y-2">
@@ -184,7 +262,46 @@ const Index = () => {
               <ul className="text-sm text-muted-foreground space-y-1 ml-6">
                 <li>• Ideal: 7.0-8.5</li>
                 <li>• Toleransi: 6.5-9.0</li>
-                <li>• pH ekstrem dapat mempengaruhi kesehatan ikan</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
+                <Wind className="h-4 w-4 text-primary" />
+                Oksigen Terlarut (DO)
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6">
+                <li>• Ideal: 5-8 mg/L</li>
+                <li>• Minimum: 4 mg/L</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
+                <Waves className="h-4 w-4 text-primary" />
+                Salinitas
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6">
+                <li>• Ideal: 15-25 ppt</li>
+                <li>• Toleransi: 10-30 ppt</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
+                <Eye className="h-4 w-4 text-primary" />
+                Kekeruhan
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6">
+                <li>• Ideal: &lt; 50 NTU</li>
+                <li>• Tinggi dapat mengurangi oksigen</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
+                <FlaskConical className="h-4 w-4 text-primary" />
+                Amonia (NH3)
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6">
+                <li>• Ideal: &lt; 0.02 mg/L</li>
+                <li>• Berbahaya jika &gt; 0.05 mg/L</li>
               </ul>
             </div>
           </div>
