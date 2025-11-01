@@ -56,8 +56,26 @@ const Index = () => {
       )
       .subscribe();
 
+    // Simulator: Generate random data every second
+    const simulator = setInterval(async () => {
+      const randomTemp = (Math.random() * (32 - 24) + 24).toFixed(2);
+      const randomPh = (Math.random() * (9.0 - 6.5) + 6.5).toFixed(2);
+
+      try {
+        await supabase
+          .from('sensor_data')
+          .insert({
+            temperature: parseFloat(randomTemp),
+            ph: parseFloat(randomPh)
+          });
+      } catch (error) {
+        console.error('Error inserting simulated data:', error);
+      }
+    }, 1000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(simulator);
     };
   }, []);
 
