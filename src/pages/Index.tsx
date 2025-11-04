@@ -165,38 +165,41 @@ const Index = () => {
 
         {/* Metrics Grid */}
         {loading ? (
-          <div className="grid gap-6 md:grid-cols-3 animate-pulse">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 bg-muted rounded-xl" />
-            ))}
+          <div className="flex justify-center gap-6 mb-8">
+            <div className="h-48 w-80 bg-muted rounded-xl animate-pulse" />
+            <div className="h-48 w-80 bg-muted rounded-xl animate-pulse" />
           </div>
         ) : latestData ? (
-          <div className="grid gap-6 md:grid-cols-3 mb-8">
-            <MetricCard
-              title="Suhu Air"
-              value={temperature.toFixed(1)}
-              unit="°C"
-              icon={Thermometer}
-              status={getTemperatureStatus(temperature)}
-              range="26-30°C"
-            />
-            <MetricCard
-              title="Tingkat pH"
-              value={ph.toFixed(1)}
-              unit=""
-              icon={Droplet}
-              status={getPhStatus(ph)}
-              range="7.0-8.5"
-            />
-            {latestData.water_level !== null && latestData.water_level !== undefined && (
+          <div className="flex flex-col items-center gap-6 mb-8">
+            <div className="flex gap-6 flex-wrap justify-center">
               <MetricCard
-                title="Level Air"
-                value={latestData.water_level.toFixed(1)}
-                unit="cm"
-                icon={Ruler}
-                status="normal"
-                range="-"
+                title="Suhu Air"
+                value={temperature.toFixed(1)}
+                unit="°C"
+                icon={Thermometer}
+                status={getTemperatureStatus(temperature)}
+                range="26-30°C"
               />
+              <MetricCard
+                title="Tingkat pH"
+                value={ph.toFixed(1)}
+                unit=""
+                icon={Droplet}
+                status={getPhStatus(ph)}
+                range="7.0-8.5"
+              />
+            </div>
+            {latestData.water_level !== null && latestData.water_level !== undefined && (
+              <div className="w-full max-w-md">
+                <MetricCard
+                  title="Level Air"
+                  value={latestData.water_level.toFixed(1)}
+                  unit="cm"
+                  icon={Ruler}
+                  status="normal"
+                  range="-"
+                />
+              </div>
             )}
           </div>
         ) : (
@@ -210,68 +213,149 @@ const Index = () => {
         )}
 
         {/* Chart Section */}
-        <Card className="mb-8 border border-border bg-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Grafik Perubahan Suhu & pH
-            </CardTitle>
+        <Card className="mb-8 border-0 shadow-lg overflow-hidden bg-gradient-to-br from-card via-card to-primary/5">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                Grafik Perubahan Suhu & pH
+              </CardTitle>
+              <div className="flex gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-chart-1" />
+                  <span className="text-muted-foreground">Suhu</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-chart-2" />
+                  <span className="text-muted-foreground">pH</span>
+                </div>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis 
-                    dataKey="time" 
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--foreground))' }}
-                  />
-                  <YAxis 
-                    yAxisId="left"
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--foreground))' }}
-                    label={{ value: 'Suhu (°C)', angle: -90, position: 'insideLeft', fill: 'hsl(var(--foreground))' }}
-                  />
-                  <YAxis 
-                    yAxisId="right" 
-                    orientation="right"
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--foreground))' }}
-                    label={{ value: 'pH', angle: 90, position: 'insideRight', fill: 'hsl(var(--foreground))' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                  <Line 
-                    yAxisId="left"
-                    type="monotone" 
-                    dataKey="temperature" 
-                    stroke="hsl(var(--chart-1))" 
-                    name="Suhu (°C)" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--chart-1))' }}
-                  />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="ph" 
-                    stroke="hsl(var(--chart-2))" 
-                    name="pH" 
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--chart-2))' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none rounded-lg" />
+                <ResponsiveContainer width="100%" height={450}>
+                  <LineChart 
+                    data={chartData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorPh" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid 
+                      strokeDasharray="3 3" 
+                      stroke="hsl(var(--border))" 
+                      strokeOpacity={0.3}
+                      vertical={false}
+                    />
+                    <XAxis 
+                      dataKey="time" 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                      dy={10}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                      label={{ 
+                        value: 'Suhu (°C)', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        style: { fill: 'hsl(var(--chart-1))', fontWeight: 600 }
+                      }}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                      label={{ 
+                        value: 'pH', 
+                        angle: 90, 
+                        position: 'insideRight',
+                        style: { fill: 'hsl(var(--chart-2))', fontWeight: 600 }
+                      }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '12px',
+                        boxShadow: '0 8px 16px -4px hsl(var(--foreground) / 0.1)',
+                        padding: '12px'
+                      }}
+                      labelStyle={{ 
+                        color: 'hsl(var(--foreground))',
+                        fontWeight: 600,
+                        marginBottom: '8px'
+                      }}
+                      itemStyle={{
+                        padding: '4px 0'
+                      }}
+                    />
+                    <Line 
+                      yAxisId="left"
+                      type="monotone" 
+                      dataKey="temperature" 
+                      stroke="hsl(var(--chart-1))" 
+                      name="Suhu (°C)" 
+                      strokeWidth={3}
+                      dot={{ 
+                        fill: 'hsl(var(--chart-1))',
+                        strokeWidth: 2,
+                        r: 4,
+                        stroke: 'hsl(var(--card))'
+                      }}
+                      activeDot={{ 
+                        r: 6,
+                        strokeWidth: 2,
+                        stroke: 'hsl(var(--card))'
+                      }}
+                      fill="url(#colorTemp)"
+                    />
+                    <Line 
+                      yAxisId="right"
+                      type="monotone" 
+                      dataKey="ph" 
+                      stroke="hsl(var(--chart-2))" 
+                      name="pH" 
+                      strokeWidth={3}
+                      dot={{ 
+                        fill: 'hsl(var(--chart-2))',
+                        strokeWidth: 2,
+                        r: 4,
+                        stroke: 'hsl(var(--card))'
+                      }}
+                      activeDot={{ 
+                        r: 6,
+                        strokeWidth: 2,
+                        stroke: 'hsl(var(--card))'
+                      }}
+                      fill="url(#colorPh)"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             ) : (
-              <div className="text-center py-12">
-                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Belum ada data untuk ditampilkan</p>
+              <div className="text-center py-16 bg-muted/30 rounded-lg">
+                <TrendingUp className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                <p className="text-muted-foreground text-lg">Belum ada data untuk ditampilkan</p>
+                <p className="text-muted-foreground/70 text-sm mt-2">Grafik akan muncul setelah data tersedia</p>
               </div>
             )}
           </CardContent>
