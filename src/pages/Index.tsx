@@ -165,13 +165,13 @@ const Index = () => {
 
         {/* Metrics Grid */}
         {loading ? (
-          <div className="flex justify-center gap-6 mb-8">
-            <div className="h-48 w-80 bg-muted rounded-xl animate-pulse" />
-            <div className="h-48 w-80 bg-muted rounded-xl animate-pulse" />
+          <div className="flex justify-center gap-8 mb-8">
+            <div className="h-64 w-96 bg-muted rounded-xl animate-pulse" />
+            <div className="h-64 w-96 bg-muted rounded-xl animate-pulse" />
           </div>
         ) : latestData ? (
           <div className="flex flex-col items-center gap-6 mb-8">
-            <div className="flex gap-6 flex-wrap justify-center">
+            <div className="flex gap-8 flex-wrap justify-center">
               <MetricCard
                 title="Suhu Air"
                 value={temperature.toFixed(1)}
@@ -179,6 +179,7 @@ const Index = () => {
                 icon={Thermometer}
                 status={getTemperatureStatus(temperature)}
                 range="26-30°C"
+                size="large"
               />
               <MetricCard
                 title="Tingkat pH"
@@ -187,6 +188,7 @@ const Index = () => {
                 icon={Droplet}
                 status={getPhStatus(ph)}
                 range="7.0-8.5"
+                size="large"
               />
             </div>
             {latestData.water_level !== null && latestData.water_level !== undefined && (
