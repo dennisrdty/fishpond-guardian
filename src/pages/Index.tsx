@@ -118,28 +118,38 @@ const Index = () => {
     : '-';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "4s" }} />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-border/50 glass-strong sticky top-0 z-50 animate-fade-in">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl" style={{ background: "var(--gradient-water)" }}>
-                <Database className="h-6 w-6 text-white" />
+              <div className="p-3 rounded-2xl shadow-lg relative overflow-hidden group" style={{ background: "var(--gradient-water)" }}>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                <Database className="h-7 w-7 text-white relative z-10" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Sistem Monitoring Tambak</h1>
-                <p className="text-sm text-muted-foreground">Pemantauan Kualitas Air Real-time</p>
+                <h1 className="text-3xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                  Sistem Monitoring Tambak
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">Pemantauan Kualitas Air Real-time</p>
               </div>
             </div>
             <Button 
               onClick={fetchLatestData}
               disabled={loading}
               variant="outline"
-              size="sm"
-              className="gap-2"
+              size="lg"
+              className="gap-2 hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-xl"
             >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
           </div>
@@ -147,20 +157,32 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Status Banner */}
         <div 
-          className="rounded-2xl p-6 mb-8 text-white relative overflow-hidden"
+          className="rounded-3xl p-8 mb-10 text-white relative overflow-hidden shadow-2xl animate-fade-in group hover:scale-[1.02] transition-all duration-500"
           style={{ background: "var(--gradient-water)" }}
         >
+          {/* Animated waves */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/30 to-transparent animate-pulse" />
+          </div>
+          
           <div className="relative z-10">
-            <h2 className="text-xl font-semibold mb-2">Status Sistem</h2>
-            <p className="text-white/90">
-              Terakhir diperbarui: <span className="font-medium">{lastUpdate}</span>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50" />
+              <h2 className="text-2xl font-bold">Status Sistem</h2>
+            </div>
+            <p className="text-white/95 text-lg">
+              Terakhir diperbarui: <span className="font-semibold bg-white/20 px-3 py-1 rounded-lg">{lastUpdate}</span>
             </p>
           </div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24" />
+          
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40 group-hover:scale-110 transition-transform duration-700" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32 group-hover:scale-110 transition-transform duration-700" />
+          <div className="absolute top-1/2 right-1/4 w-4 h-4 bg-white/30 rounded-full animate-ping" />
+          <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-white/40 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
         </div>
 
         {/* Metrics Grid */}
@@ -215,7 +237,7 @@ const Index = () => {
         )}
 
         {/* Chart Section */}
-        <Card className="mb-8 border-0 shadow-lg overflow-hidden bg-gradient-to-br from-card via-card to-primary/5">
+        <Card className="mb-8 border-0 shadow-2xl overflow-hidden glass-strong animate-fade-in hover:shadow-3xl transition-all duration-500" style={{ animationDelay: "0.2s" }}>
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-3 text-2xl">
@@ -364,27 +386,46 @@ const Index = () => {
         </Card>
 
         {/* Info Section */}
-        <div className="p-6 bg-card rounded-xl border border-border">
-          <h3 className="text-lg font-semibold text-foreground mb-3">Informasi Parameter</h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <h4 className="font-medium text-foreground flex items-center gap-2">
-                <Thermometer className="h-4 w-4 text-primary" />
+        <div className="p-8 glass-card rounded-3xl shadow-xl animate-fade-in hover:shadow-2xl transition-all duration-500" style={{ animationDelay: "0.4s" }}>
+          <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+            <div className="w-1 h-8 bg-gradient-to-b from-primary to-accent rounded-full" />
+            Informasi Parameter
+          </h3>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-3 p-6 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300 group">
+              <h4 className="font-semibold text-foreground flex items-center gap-3 text-lg">
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
+                  <Thermometer className="h-5 w-5 text-primary" />
+                </div>
                 Suhu Air
               </h4>
-              <ul className="text-sm text-muted-foreground space-y-1 ml-6">
-                <li>• Ideal: 26-30°C</li>
-                <li>• Toleransi: 24-32°C</li>
+              <ul className="text-sm text-muted-foreground space-y-2 ml-6">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                  Ideal: <span className="font-medium text-foreground">26-30°C</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-warning" />
+                  Toleransi: <span className="font-medium text-foreground">24-32°C</span>
+                </li>
               </ul>
             </div>
-            <div className="space-y-2">
-              <h4 className="font-medium text-foreground flex items-center gap-2">
-                <Droplet className="h-4 w-4 text-primary" />
+            <div className="space-y-3 p-6 rounded-2xl bg-gradient-to-br from-accent/5 to-transparent hover:from-accent/10 transition-all duration-300 group">
+              <h4 className="font-semibold text-foreground flex items-center gap-3 text-lg">
+                <div className="p-2 rounded-lg bg-accent/10 group-hover:scale-110 transition-transform duration-300">
+                  <Droplet className="h-5 w-5 text-accent" />
+                </div>
                 Tingkat pH
               </h4>
-              <ul className="text-sm text-muted-foreground space-y-1 ml-6">
-                <li>• Ideal: 7.0-8.5</li>
-                <li>• Toleransi: 6.5-9.0</li>
+              <ul className="text-sm text-muted-foreground space-y-2 ml-6">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                  Ideal: <span className="font-medium text-foreground">7.0-8.5</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-warning" />
+                  Toleransi: <span className="font-medium text-foreground">6.5-9.0</span>
+                </li>
               </ul>
             </div>
           </div>
