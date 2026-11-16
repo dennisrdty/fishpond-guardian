@@ -67,6 +67,7 @@ without Supabase credentials or a network connection to the database.
 
 ## Contributing
 
+Maintained by [Dennis Raditya](https://github.com/dennisrdty).
 Bug reports, tests, documentation, and hardware integration examples are welcome.
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow.
 
